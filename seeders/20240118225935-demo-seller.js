@@ -3,28 +3,31 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    return queryInterface.bulkInsert("Sellers", [
+    return queryInterface.bulkInsert("sellers", [
       {
         id: "85252c6d-c6c3-47b0-ac98-d4134c2996c0",
-        businessName: "John",
+        business_name: "John",
         email: "example@example.com",
         password: "doe1234",
-        confirmPassword: "doe1234",
-        phoneNumber: "44852739648367",
+        confirm_password: "doe1234",
+        phone_number: "44852739648367",
         country: "USA",
         city: "Dallas",
-        websiteLink: "somewebsite.com",
-        verifiedSeller: "yes",
+        website_link: "somewebsite.com",
+        verified_seller: "yes",
         avatar: "avatar.com",
-        taxId: "DA438352005",
+        tax_id: "DA438352005",
         catagories: "beauty",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        pereferred_buyer_sex: "female",
+        preferred_buyer_age_group: "25-40",
+        seller_type: "retailer",
+        created_at: new Date(),
+        updated_at: new Date(),
       },
     ]);
   },
 
   async down(queryInterface, Sequelize) {
-    return queryInterface.bulkDelete("Sellers", null, {});
+    return queryInterface.bulkDelete("sellers", null, {});
   },
 };

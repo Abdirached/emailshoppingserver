@@ -18,8 +18,8 @@ module.exports = {
         item_state: "new",
         item_quantity: "1",
         only_verified_seller: "false",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        created_at: new Date(),
+        updated_at: new Date(),
       },
     ]);
   },

@@ -31,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       item_state: DataTypes.STRING,
       item_quantity: DataTypes.STRING,
       only_verified_seller: DataTypes.STRING,
+      video_url: DataTypes.STRING,
     },
     {
       sequelize,

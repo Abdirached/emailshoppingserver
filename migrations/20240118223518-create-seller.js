@@ -12,18 +12,6 @@ module.exports = {
       business_name: {
         type: Sequelize.STRING,
       },
-      email: {
-        type: Sequelize.STRING,
-      },
-      password: {
-        type: Sequelize.STRING,
-      },
-      confirm_password: {
-        type: Sequelize.STRING,
-      },
-      phone_number: {
-        type: Sequelize.STRING,
-      },
       country: {
         type: Sequelize.STRING,
       },
@@ -34,9 +22,6 @@ module.exports = {
         type: Sequelize.STRING,
       },
       verified_seller: {
-        type: Sequelize.STRING,
-      },
-      avatar: {
         type: Sequelize.STRING,
       },
       tax_id: {
@@ -65,6 +50,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Sellers");
+    await queryInterface.dropTable("sellers");
   },
 };

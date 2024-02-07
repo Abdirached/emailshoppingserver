@@ -2,63 +2,42 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("order_inquiries", {
+    await queryInterface.createTable("users", {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      user_name: {
+      email: {
         type: Sequelize.STRING,
       },
-      shopping_email: {
+      password: {
         type: Sequelize.STRING,
       },
-      sex: {
+      confirm_password: {
         type: Sequelize.STRING,
       },
-      age: {
+      phone_number: {
         type: Sequelize.STRING,
       },
-      country: {
+      avatar: {
         type: Sequelize.STRING,
       },
-      city: {
+      user_role: {
         type: Sequelize.STRING,
       },
-      order_description: {
-        type: Sequelize.STRING,
-      },
-      budget: {
-        type: Sequelize.STRING,
-      },
-      category: {
-        type: Sequelize.STRING,
-      },
-      item_state: {
-        type: Sequelize.STRING,
-      },
-      item_quantity: {
-        type: Sequelize.STRING,
-      },
-      video_url: {
-        type: Sequelize.STRING,
-      },
-      only_verified_seller: {
-        type: Sequelize.STRING,
-      },
-      created_at: {
+      createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
       },
-      updated_at: {
+      updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
       },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("order_inquiries");
+    await queryInterface.dropTable("users");
   },
 };

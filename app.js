@@ -1,7 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const { Sequelize } = require("sequelize");
+const passport = require("passport");
 require("dotenv").config();
+require("./config/passport-config");
+const sellerRegistration = require("./routes/seller-registration");
+const buyerRegistration = require("./routes/buyer-registration");
 const app = express();
 const port = 5000;
 
@@ -24,9 +28,9 @@ const sequelize = new Sequelize(
 })();
 app.use(cors());
 app.use(express.json());
-app.get("/", (req, res) => {
-  res.send("Hello World! baby");
-});
+app.use(passport.initialize());
+app.use("/seller-registration", sellerRegistration);
+app.use("/buyer-registration", buyerRegistration);
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

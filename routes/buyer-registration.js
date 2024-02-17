@@ -10,7 +10,7 @@ const sequelize = new Sequelize(
   }
 );
 const User = require("../models/user")(sequelize, Sequelize);
-const Seller = require("../models/seller")(sequelize, Sequelize);
+const Buyer = require("../models/buyer")(sequelize, Sequelize);
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 router.post("/", async (req, res) => {
@@ -18,20 +18,12 @@ router.post("/", async (req, res) => {
     const {
       email,
       password,
-      business_name,
       confirm_password,
       phone_number,
       avatar,
       user_role,
-      country,
-      city,
-      website_link,
-      verified_seller,
-      tax_id,
-      catagories,
-      pereferred_buyer_sex,
-      preferred_buyer_age_group,
-      seller_type,
+      first_name,
+      last_name,
     } = req.body;
 
     // **Input Sanitization and Validation:**
@@ -56,26 +48,16 @@ router.post("/", async (req, res) => {
       user_role,
     });
     console.log(user.dataValues.id);
-    const seller = await Seller.create({
+    const buyer = await Buyer.create({
       user_id: user.dataValues.id,
-      business_name,
-      country,
-      city,
-      website_link,
-      verified_seller,
-      tax_id,
-      catagories,
-      pereferred_buyer_sex,
-      preferred_buyer_age_group,
-      seller_type,
+      first_name,
+      last_name,
     });
 
     // **Avoid storing JWT in database:**
     // Instead, store it securely in an HttpOnly cookie (in signin.js)
 
-    res
-      .status(201)
-      .json({ message: "User created successfully", user, seller });
+    res.status(201).json({ message: "User created successfully", user, buyer });
   } catch (err) {
     console.error(err);
     // **Specific Error Handling:**

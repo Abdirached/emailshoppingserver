@@ -6,6 +6,7 @@ require("dotenv").config();
 require("./config/passport-config");
 const sellerRegistration = require("./routes/seller-registration");
 const buyerRegistration = require("./routes/buyer-registration");
+const signIn = require("./routes/sign-in");
 const app = express();
 const port = 5000;
 
@@ -31,6 +32,7 @@ app.use(express.json());
 app.use(passport.initialize());
 app.use("/seller-registration", sellerRegistration);
 app.use("/buyer-registration", buyerRegistration);
+app.use("/sign-in", signIn);
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

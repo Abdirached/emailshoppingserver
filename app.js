@@ -7,6 +7,8 @@ require("./config/passport-config");
 const sellerRegistration = require("./routes/seller-registration");
 const buyerRegistration = require("./routes/buyer-registration");
 const signIn = require("./routes/sign-in");
+const buyerGoogleAuth = require("./routes/buyer-google-auth");
+const sellerGoogleAuth = require("./routes/seller.google.auth");
 const app = express();
 const port = 5000;
 
@@ -33,6 +35,8 @@ app.use(passport.initialize());
 app.use("/seller-registration", sellerRegistration);
 app.use("/buyer-registration", buyerRegistration);
 app.use("/sign-in", signIn);
+app.use("/auth", buyerGoogleAuth);
+app.use("/auth", sellerGoogleAuth);
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

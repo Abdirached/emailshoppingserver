@@ -6,6 +6,7 @@ require("dotenv").config();
 require("./config/passport-config");
 const sellerRegistration = require("./routes/seller-registration");
 const buyerRegistration = require("./routes/buyer-registration");
+const orderInquiry = require("./routes/order-inquiry");
 const signIn = require("./routes/sign-in");
 const buyerGoogleAuth = require("./routes/buyer-google-auth");
 const sellerGoogleAuth = require("./routes/seller.google.auth");
@@ -32,6 +33,7 @@ const sequelize = new Sequelize(
 app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
+app.use("/", orderInquiry);
 app.use("/seller-registration", sellerRegistration);
 app.use("/buyer-registration", buyerRegistration);
 app.use("/sign-in", signIn);

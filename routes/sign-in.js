@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
     });
     console.log(token);
     res.cookie("jwt", token, { httpOnly: true, secure: true }); // Set secure cookie flag for HTTPS only
-    res.status(200).json({ message: "Logged in successfully" });
+    res.status(200).json(token);
   } catch (error) {
     console.error(error);
     // **Specific Error Handling:**

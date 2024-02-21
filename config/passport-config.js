@@ -1,22 +1,34 @@
 const passport = require("passport");
 const jwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
-const User = require("../models/user");
+const Sequelize = require("sequelize");
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USERNAME,
+  process.env.DB_PASSWORD,
+  {
+    dialect: "postgres",
+  }
+);
+const User = require("../models/user")(sequelize, Sequelize);
 require("dotenv").config();
 
 // Configure passport JWT strategy with Bearer token and error handling
 
 const options = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("Bearer"),
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.JWT_SECRET,
 };
 
 const jwtAuth = new jwtStrategy(options, async (payload, done) => {
   try {
-    const user = await User.findByPk(payload.userId);
-    if (!user) {
-      return done(null, false, { message: "Invalid token" });
+    console.log(payload);
+    const user = await User.findByPk(payload.id);
+    console.log(user);
+    if (user) {
+      return done(null, user);
     }
+    done(null, false);
   } catch (err) {
     console.error(err);
     done(err);

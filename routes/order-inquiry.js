@@ -13,7 +13,14 @@ const sequelize = new Sequelize(
 const User = require("../models/user")(sequelize, Sequelize);
 const OrderInquiry = require("../models/order-inquiry")(sequelize, Sequelize);
 const Seller = require("../models/seller")(sequelize, Sequelize);
-
+const {
+  SESClient,
+  GetTemplateCommand,
+  CreateTemplateCommand,
+  SendBulkTemplatedEmailCommand,
+} = require("@aws-sdk/client-ses");
+const sesClient = new SESClient({ region: process.env.REGION });
+require("dotenv").config();
 // get all order inquires by userid
 router.get(
   "/:userId",
@@ -85,6 +92,44 @@ router.post(
         limit: 50,
       });
       res.status(201).json(sellersInthatLocation);
+      const getTemplateCommand = new GetTemplateCommand({
+        TemplateName: "EMAIL_SHOPPING",
+      });
+      const findTemplate = await sesClient.send(getTemplateCommand);
+      console.log(findTemplate);
+      if (!findTemplate) {
+        const createTemplateCommand = new CreateTemplateCommand({
+          Template: {
+            TemplateName: "EMAIL_SHOPPING" /* required */,
+            HtmlPart:
+              "<h1>Hello {{name}},</h1><p>Your favorite animal is {{favoriteanimal}}.</p>",
+            SubjectPart: "Buyer Inquiry",
+            TextPart: "{{BuyerDescription}}",
+          },
+        });
+        const createNewTemplate = await sesClient.send(createTemplateCommand);
+        console.log(createNewTemplate);
+        const sendEmailCommand = new SendBulkTemplatedEmailCommand({
+          From: "your-verified-sender-email@example.com", // Replace with your actual email address
+          Template: "EMAIL_SHOPPING",
+          Destinations: sellersInthatLocation.map((recipient) => ({
+            Destination: { ToAddresses: [recipient.email] },
+            ReplacementTemplateData: recipient.data,
+          })),
+        });
+        const sendEmailToManySellers = await sesClient.send(sendEmailCommand);
+        console.log(sendEmailToManySellers);
+      }
+      const sendEmailCommand = new SendBulkTemplatedEmailCommand({
+        From: "your-verified-sender-email@example.com", // Replace with your actual email address
+        Template: "EMAIL_SHOPPING",
+        Destinations: sellersInthatLocation.map((recipient) => ({
+          Destination: { ToAddresses: [recipient.email] },
+          ReplacementTemplateData: recipient.data,
+        })),
+      });
+      const sendEmailToManySellers = await sesClient.send(sendEmailCommand);
+      console.log(sendEmailToManySellers);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });

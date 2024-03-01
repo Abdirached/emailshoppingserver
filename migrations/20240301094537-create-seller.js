@@ -2,23 +2,22 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("order_inquiries", {
+    await queryInterface.createTable("Sellers", {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      user_name: {
-        type: Sequelize.STRING,
+      user_id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: "Users",
+          key: "id",
+        },
       },
-      shopping_email: {
-        type: Sequelize.STRING,
-      },
-      sex: {
-        type: Sequelize.STRING,
-      },
-      age: {
+      business_name: {
         type: Sequelize.STRING,
       },
       country: {
@@ -27,25 +26,25 @@ module.exports = {
       city: {
         type: Sequelize.STRING,
       },
-      order_description: {
+      website_link: {
         type: Sequelize.STRING,
       },
-      budget: {
+      verified_seller: {
         type: Sequelize.STRING,
       },
-      category: {
+      tax_id: {
         type: Sequelize.STRING,
       },
-      item_state: {
+      catagories: {
         type: Sequelize.STRING,
       },
-      item_quantity: {
+      pereferred_buyer_sex: {
         type: Sequelize.STRING,
       },
-      video_url: {
+      preferred_buyer_age_group: {
         type: Sequelize.STRING,
       },
-      only_verified_seller: {
+      seller_type: {
         type: Sequelize.STRING,
       },
       createdAt: {
@@ -59,6 +58,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("order_inquiries");
+    await queryInterface.dropTable("Sellers");
   },
 };

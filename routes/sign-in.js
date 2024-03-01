@@ -1,15 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Sequelize = require("sequelize");
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USERNAME,
-  process.env.DB_PASSWORD,
-  {
-    dialect: "postgres",
-  }
-);
-const User = require("../models/user")(sequelize, Sequelize);
+const Models = require("../models");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
@@ -17,7 +8,7 @@ const bcrypt = require("bcrypt");
 router.post("/", async (req, res) => {
   try {
     const { email, password } = req.body; // Assuming email and password are sent in request body
-    const user = await User.findOne({ where: { email } });
+    const user = await Models.User.findOne({ where: { email } });
     if (!user) {
       return res.status(400).json({ message: "Invalid username or password" });
     }

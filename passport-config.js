@@ -10,7 +10,7 @@ const sequelize = new Sequelize(
     dialect: "postgres",
   }
 );
-const User = require("../models/user")(sequelize, Sequelize);
+const User = require("./models/user")(sequelize, Sequelize);
 require("dotenv").config();
 
 // Configure passport JWT strategy with Bearer token and error handling

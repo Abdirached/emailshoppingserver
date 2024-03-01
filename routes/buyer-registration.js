@@ -1,16 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Sequelize = require("sequelize");
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USERNAME,
-  process.env.DB_PASSWORD,
-  {
-    dialect: "postgres",
-  }
-);
-const User = require("../models/user")(sequelize, Sequelize);
-const Buyer = require("../models/buyer")(sequelize, Sequelize);
+const Models = require("../models");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 router.post("/", async (req, res) => {
@@ -29,7 +19,7 @@ router.post("/", async (req, res) => {
     // **Input Sanitization and Validation:**
     // Use a library like validator to sanitize and validate inputs
 
-    const existingUser = await User.findOne({ where: { email } });
+    const existingUser = await Models.User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists" });
     }
@@ -39,7 +29,7 @@ router.post("/", async (req, res) => {
     console.log(salt, password);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await User.create({
+    const user = await Models.User.create({
       email,
       password: hashedPassword,
       confirm_password,
@@ -48,7 +38,7 @@ router.post("/", async (req, res) => {
       user_role,
     });
     console.log(user.dataValues.id);
-    const buyer = await Buyer.create({
+    const buyer = await Models.Buyer.create({
       user_id: user.dataValues.id,
       first_name,
       last_name,

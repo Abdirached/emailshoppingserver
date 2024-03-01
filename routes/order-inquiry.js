@@ -10,9 +10,7 @@ const sequelize = new Sequelize(
     dialect: "postgres",
   }
 );
-const User = require("../models/user")(sequelize, Sequelize);
-const OrderInquiry = require("../models/order-inquiry")(sequelize, Sequelize);
-const Seller = require("../models/seller")(sequelize, Sequelize);
+const Models = require("../models");
 const {
   SESClient,
   GetTemplateCommand,
@@ -27,7 +25,7 @@ router.get(
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     try {
-      const orderInquiries = await OrderInquiry.findAll({
+      const orderInquiries = await Models.OrderInquiry.findAll({
         where: { user_id: req.params.userId },
         include: [
           {
@@ -67,7 +65,7 @@ router.post(
         only_verified_seller,
         video_url,
       } = req.body;
-      const orderInquiry = await OrderInquiry.create({
+      const orderInquiry = await Models.OrderInquiry.create({
         user_id: req.user.dataValues.id,
         user_name,
         shopping_email,
@@ -83,11 +81,19 @@ router.post(
         only_verified_seller,
         video_url,
       });
-      const sellersInthatLocation = await Seller.findAll({
+      const sellersInthatLocation = await Models.Seller.findAll({
         where: {
           country: orderInquiry.country,
           catagories: orderInquiry.category,
         },
+        include: [
+          {
+            model: Models.User,
+            attributes: {
+              exclude: ["password"],
+            },
+          },
+        ],
         order: sequelize.random(),
         limit: 50,
       });
@@ -110,10 +116,10 @@ router.post(
         const createNewTemplate = await sesClient.send(createTemplateCommand);
         console.log(createNewTemplate);
         const sendEmailCommand = new SendBulkTemplatedEmailCommand({
-          From: "your-verified-sender-email@example.com", // Replace with your actual email address
+          Source: "your-verified-sender-email@example.com", // Replace with your actual email address
           Template: "EMAIL_SHOPPING",
           Destinations: sellersInthatLocation.map((recipient) => ({
-            Destination: { ToAddresses: [recipient.email] },
+            Destination: { ToAddresses: [recipient.User.email] },
             ReplacementTemplateData: recipient.data,
           })),
         });
@@ -121,7 +127,7 @@ router.post(
         console.log(sendEmailToManySellers);
       }
       const sendEmailCommand = new SendBulkTemplatedEmailCommand({
-        From: "your-verified-sender-email@example.com", // Replace with your actual email address
+        Source: "your-verified-sender-email@example.com", // Replace with your actual email address
         Template: "EMAIL_SHOPPING",
         Destinations: sellersInthatLocation.map((recipient) => ({
           Destination: { ToAddresses: [recipient.email] },

@@ -125,7 +125,7 @@ router.post(
         const createNewTemplate = await sesClient.send(createTemplateCommand);
         console.log(createNewTemplate);
         const sendEmailCommand = new SendBulkTemplatedEmailCommand({
-          Source: "your sender email", // Replace with your actual email address
+          Source: process.env.SENDEREMAIL, // Replace with your actual email address
           Template: "EMAIL_SHOPPING",
           Destinations: sellersInthatLocation.map((recipient) => ({
             Destination: { ToAddresses: [recipient.User.email] },
@@ -145,10 +145,10 @@ router.post(
         console.log("not existed but created and sent", sendEmailToManySellers);
       }
       const sendEmailCommand = new SendBulkTemplatedEmailCommand({
-        Source: "your sender email", // Replace with your actual email address
+        Source: process.env.SENDEREMAIL, // Replace with your actual email address
         Template: "EMAIL_SHOPPING",
         Destinations: sellersInthatLocation.map((recipient) => ({
-          Destination: { ToAddresses: [recipient.email] },
+          Destination: { ToAddresses: [recipient.User.email] },
           ReplacementTemplateData: JSON.stringify({
             name: sellersInthatLocation[0].business_name,
             BuyerName: orderInquiry.user_name,

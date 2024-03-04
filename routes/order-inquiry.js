@@ -13,11 +13,18 @@ const sequelize = new Sequelize(
 const Models = require("../models");
 const {
   SESClient,
+  ListTemplatesCommand,
   GetTemplateCommand,
   CreateTemplateCommand,
   SendBulkTemplatedEmailCommand,
 } = require("@aws-sdk/client-ses");
-const sesClient = new SESClient({ region: process.env.REGION });
+const sesClient = new SESClient({
+  credentials: {
+    accessKeyId: process.env.ACCESSKEY,
+    secretAccessKey: process.env.SECRETACCESSKEY,
+  },
+  region: process.env.REGION,
+});
 require("dotenv").config();
 // get all order inquires by userid
 router.get(
@@ -98,17 +105,19 @@ router.post(
         limit: 50,
       });
       res.status(201).json(sellersInthatLocation);
-      const getTemplateCommand = new GetTemplateCommand({
-        TemplateName: "EMAIL_SHOPPING",
-      });
-      const findTemplate = await sesClient.send(getTemplateCommand);
-      console.log(findTemplate);
-      if (!findTemplate) {
+      const listTemplateCommand = new ListTemplatesCommand({});
+      const response = await sesClient.send(listTemplateCommand);
+      console.log(response, "bal eeg");
+      const templateExists = response.TemplatesMetadata.some(
+        (template) => template.Name === "EMAIL_SHOPPING"
+      );
+      console.log(templateExists, "check");
+      if (!templateExists) {
         const createTemplateCommand = new CreateTemplateCommand({
           Template: {
             TemplateName: "EMAIL_SHOPPING" /* required */,
             HtmlPart:
-              "<h1>Hello {{name}},</h1><p>Your favorite animal is {{favoriteanimal}}.</p>",
+              "<h1>Hello {{name}},</h1><p>order inquiry from a {{BuyerName}}.</p>",
             SubjectPart: "Buyer Inquiry",
             TextPart: "{{BuyerDescription}}",
           },
@@ -116,26 +125,44 @@ router.post(
         const createNewTemplate = await sesClient.send(createTemplateCommand);
         console.log(createNewTemplate);
         const sendEmailCommand = new SendBulkTemplatedEmailCommand({
-          Source: "your-verified-sender-email@example.com", // Replace with your actual email address
+          Source: "your sender email", // Replace with your actual email address
           Template: "EMAIL_SHOPPING",
           Destinations: sellersInthatLocation.map((recipient) => ({
             Destination: { ToAddresses: [recipient.User.email] },
-            ReplacementTemplateData: recipient.data,
+            ReplacementTemplateData: JSON.stringify({
+              name: sellersInthatLocation[0].business_name,
+              BuyerName: orderInquiry.user_name,
+              BuyerDescription: orderInquiry.order_description,
+            }),
           })),
+          DefaultTemplateData: JSON.stringify({
+            name: sellersInthatLocation[0].business_name,
+            BuyerName: orderInquiry.user_name,
+            BuyerDescription: orderInquiry.order_description,
+          }),
         });
         const sendEmailToManySellers = await sesClient.send(sendEmailCommand);
-        console.log(sendEmailToManySellers);
+        console.log("not existed but created and sent", sendEmailToManySellers);
       }
       const sendEmailCommand = new SendBulkTemplatedEmailCommand({
-        Source: "your-verified-sender-email@example.com", // Replace with your actual email address
+        Source: "your sender email", // Replace with your actual email address
         Template: "EMAIL_SHOPPING",
         Destinations: sellersInthatLocation.map((recipient) => ({
           Destination: { ToAddresses: [recipient.email] },
-          ReplacementTemplateData: recipient.data,
+          ReplacementTemplateData: JSON.stringify({
+            name: sellersInthatLocation[0].business_name,
+            BuyerName: orderInquiry.user_name,
+            BuyerDescription: orderInquiry.order_description,
+          }),
         })),
+        DefaultTemplateData: JSON.stringify({
+          name: sellersInthatLocation[0].business_name,
+          BuyerName: orderInquiry.user_name,
+          BuyerDescription: orderInquiry.order_description,
+        }),
       });
       const sendEmailToManySellers = await sesClient.send(sendEmailCommand);
-      console.log(sendEmailToManySellers);
+      console.log("existed and sent", sendEmailToManySellers);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });

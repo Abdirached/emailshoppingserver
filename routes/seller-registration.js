@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Models = require("../models");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 require("dotenv").config();
 router.post("/", async (req, res) => {
   try {

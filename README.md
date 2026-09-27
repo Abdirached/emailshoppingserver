@@ -14,6 +14,10 @@ Built with Node.js, Express, PostgreSQL (Sequelize) and Passport. Written by han
 - Order inquiries persisted to PostgreSQL and delivered by email (AWS SES)
 - Sequelize models + migrations for a relational schema
 
+## Screenshots
+
+![Seller notification email generated from the AWS SES template with per-order merge fields](docs/email-template.png)
+
 ## Stack
 
 | Layer | Technology |
